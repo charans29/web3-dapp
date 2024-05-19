@@ -31,7 +31,11 @@
 7. Initialized (next app) user & worker frontends `прх create-next-app`
 
 8. Designed schema using postgres(DB) & prisma(ORM) by installing `npm i prisma` under bsckend and then initialised `npx prisma init` to set up Prisma ORM(by writing tables) and then migrated to postgres `npx prisma migrate dev`
+9. Added endpoints for User and Worker routes and for sso installing JWT `npm i jsonwebtoken` later `npm i --save-dev @types/jsonwebtoken` to prevent type error
+10. to compile code `tsc -b` & to run `node dist/index.js` and tested through postman.
 
+### Getting PresignedURL's 
 
+#### (Generate presigned URL's nodejs s3)
 
- 
+11. through `npm i @aws-sdk/client-s3` as well as `npm i @aws-sdk/s3-presigned-post` and this endpoint making through authmiddleware to identofy user
