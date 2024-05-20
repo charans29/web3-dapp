@@ -8,6 +8,7 @@ const express_1 = __importDefault(require("express"));
 const user_1 = __importDefault(require("./routers/user"));
 const worker_1 = __importDefault(require("./routers/worker"));
 const app = (0, express_1.default)();
+app.use(express_1.default.json());
 exports.JWT_SECRET = "SECRET";
 app.use("/v1/user", user_1.default);
 app.use("/v1/worker", worker_1.default);

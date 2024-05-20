@@ -19,20 +19,98 @@ const client_s3_1 = require("@aws-sdk/client-s3");
 const s3_presigned_post_1 = require("@aws-sdk/s3-presigned-post");
 const __1 = require("..");
 const middleware_1 = require("../middleware");
+const types_1 = require("../types");
 const router = (0, express_1.Router)();
 const prismaClient = new client_1.PrismaClient();
 const s3Client = new client_s3_1.S3Client({
     credentials: {
-        accessKeyId: "USER ACCES ID",
-        secretAccessKey: "USER ACCESSS KEY"
+        accessKeyId: "PRESIGNED_USER_ID",
+        secretAccessKey: "PRESIGNED_USER_KEY"
     },
     region: "us-east-2"
 });
-router.get("/presignedUrl", middleware_1.authMiddlewrre, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const DEFAULT_TITLE = "Select the most clickable thumbnail";
+router.get("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //@ts-ignore
+    const taskId = req.query.taskId;
+    //@ts-ignore
+    const userId = req.userId;
+    const taskDetails = yield prismaClient.task.findFirst({
+        where: {
+            user_id: Number(userId),
+            id: Number(taskId)
+        },
+        include: {
+            options: true
+        }
+    });
+    if (!taskDetails) {
+        return res.status(411).json({
+            message: "access restricted"
+        });
+    }
+    const response = yield prismaClient.submission.findMany({
+        where: {
+            task_id: Number(taskId),
+        },
+        include: {
+            option: true
+        }
+    });
+    const result = {};
+    taskDetails.options.forEach(option => {
+        result[option.id] = {
+            count: 1,
+            option: {
+                imgUrl: option.img_url
+            }
+        };
+    });
+    response.forEach(r => {
+        result[r.option_id].count++;
+    });
+    res.json({
+        result
+    });
+}));
+router.post("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const body = req.body;
+    const parseResult = types_1.createTaskInput.safeParse(body);
+    // @ts-ignore
+    const userId = req.userId;
+    console.log(parseResult.data);
+    if (!parseResult.success) {
+        return res.status(411).json({
+            message: "you've sent the wrong inputs"
+        });
+    }
+    const response = yield prismaClient.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+        var _a;
+        const task = yield tx.task.create({
+            data: {
+                title: (_a = parseResult.data.title) !== null && _a !== void 0 ? _a : DEFAULT_TITLE,
+                amount: "1",
+                sign: parseResult.data.signature,
+                user_id: userId
+            }
+        });
+        yield tx.option.createMany({
+            data: parseResult.data.options.map(option => ({
+                img_url: option.imgUrl,
+                task_id: task.id
+            }))
+        });
+        return task;
+    }));
+    res.json({
+        id: response.id
+    });
+}));
+router.get("/presignedUrl", middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
     const userId = req.userId;
     const { url, fields } = yield (0, s3_presigned_post_1.createPresignedPost)(s3Client, {
-        Bucket: 'third-web-dapp',
+        Bucket: 'usr-bucket',
         Key: `files/${userId}/${Math.random()}/img.jpg`,
         Conditions: [
             ['content-length-range', 0, 5 * 1024 * 1024] // 5 MB max

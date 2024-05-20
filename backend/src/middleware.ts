@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from ".";
 
-export function authMiddlewrre(req: Request, res:Response, next:NextFunction) {
+export function authMiddleware(req: Request, res:Response, next:NextFunction) {
     const authHEader =  req.headers["authorization"] ?? ""
 
     try{
