@@ -14,9 +14,9 @@ datasource db {
 }
 
 model User {
-  id          Int         @id @default(autoincrement())
-  address     String      @unique
-  tasks       Task[]
+  id      Int      @id @default(autoincrement())
+  address String   @unique
+  tasks   Task[]
 }
 
 model Task {
@@ -24,36 +24,54 @@ model Task {
   title       String?      @default("Select the most clickable thumbnail")
   user_id     Int
   sign        String
-  amount      String 
+  amount      Int
   done        Boolean      @default(false)
   options     Option[]
-  user        User        @relation(fields: [user_id], references: [id])
+  user        User         @relation(fields: [user_id], references: [id])
   submissions Submission[]
 }
 
 model Option {
-  id          Int         @id @default(autoincrement())
-  img_url     String 
-  task_id     Int 
-  task        Task        @relation(fields: [task_id], references: [id])
+  id          Int          @id @default(autoincrement())
+  img_url     String
+  task_id     Int
+  task        Task         @relation(fields: [task_id], references: [id])
   submissions Submission[]
-} 
+}
 
 model Worker {
-  id          Int         @id @default(autoincrement())
-  address     String      @unique
+  id          Int          @id @default(autoincrement())
+  address     String       @unique
   submissions Submission[]
   pending_amt Int
   locked_amt  Int
+  Payout      Payout[]
 }
 
 model Submission {
-  id          Int         @id @default(autoincrement())
-  worker_id   Int
-  worker      Worker      @relation(fields: [worker_id], references: [id])
-  option_id   Int
-  option      Option      @relation(fields: [option_id], references: [id])
-  task_id     Int
-  task        Task        @relation(fields: [task_id], references: [id])
-  amount      String 
-} 
+  id        Int    @id @default(autoincrement())
+  worker_id Int
+  worker    Worker @relation(fields: [worker_id], references: [id])
+  option_id Int
+  option    Option @relation(fields: [option_id], references: [id])
+  task_id   Int
+  task      Task   @relation(fields: [task_id], references: [id])
+  amount    Int
+
+  @@unique([worker_id, task_id])
+}
+
+model Payout {
+  id        Int       @id @default(autoincrement())
+  worker_id Int
+  worker    Worker    @relation(fields: [worker_id], references: [id])
+  amount    Int
+  signature String
+  status    TxnStatus
+}
+
+enum TxnStatus {
+  processing
+  success
+  Failure
+}

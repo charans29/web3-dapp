@@ -53,4 +53,5 @@
     }
 15. tested task(get) endpoint http://localhost:3000/v1/user/task?taskId=1
 16. creting endpoints to worker and removed bal_id from worker schema and migrated `npx prisma migrate dev --name remove_balid_worker` then generated `npx prisma generate `.
-17. Again modified Task schema by altering it with done col, so migrate and generate
+17. Again modified Task schema by altering it with done col, so migrate and generate.
+18. once again `npx prisma migrate dev --name added_unique_constraint` and regenerate.
