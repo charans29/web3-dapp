@@ -8,23 +8,6 @@ import { BACKEND_URL } from "@/utils";
 function Upload() {
     const [images, setImages] = useState<string[]>([]);
     const [title, setTitle] = useState("");
-    // const router = useRouter();
-
-    // async function onSubmit() {
-    //     const response = await axios.post(`${BACKEND_URL}/v1/user/task`, {
-    //         options: images.map(image => ({
-    //             imageUrl: image,
-    //         })),
-    //         title,
-    //         signature: "txSignature"
-    //     }, {
-    //         headers: {
-    //             "Authorization": localStorage.getItem("token")
-    //         }
-    //     })
-
-    //     router.push(`/task/${response.data.id}`)
-    // }
   return (
     <div>
         <div className="flex justify-center text-blue-500 font-thin">
@@ -43,21 +26,16 @@ function Upload() {
                 <label className="pl-4 block mt-5">
                     Add Images
                 </label>
-                <div className="flex justify-center max-w-screen-lg pt-4">
+                <div className="mt-4 w-28 h-42 flex justify-around">
                     {images.map(image => <UploadImage image={image} onImageAdded={(imageUrl) => {
                         setImages(i => [...i, imageUrl]);
-                    }} />)}
+                        }} />)}
                 </div>
             </div>
         </div>
-            <UploadImage onImageAdded={(imageUrl) => {
-                    setImages(i => [...i, imageUrl]);
-                }} />
-            {/* <div className="flex justify-center">
-            <button onClick={txSignature ? onSubmit : makePayment} type="button" className="mt-4 text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">
-                {txSignature ? "Submit Task" : "Pay 0.1 SOL"}
-            </button>
-        </div> */}
+        <UploadImage onImageAdded={(imageUrl) => {
+            setImages(i => [...i, imageUrl]);
+            }} />
     </div>
   )
 }
