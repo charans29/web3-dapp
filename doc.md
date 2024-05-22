@@ -38,8 +38,8 @@
 
 #### (Generate presigned URL's nodejs s3)
 
-11. through `npm i @aws-sdk/client-s3` as well as `npm i @aws-sdk/s3-presigned-post` and this endpoint making through authmiddleware to identofy user
-12. make sure of created IAM user to be assigned to one of the security groups that are related to buckets.
+11. through `npm i @aws-sdk/client-s3` as well as `npm i @aws-sdk/s3-presigned-post` and this endpoint making through authmiddleware to identify user
+12. make sure of created IAM user to be assigned to one of the security groups that are related to buckets and also make sure to not include token in headers.
 13. Added `npm i zod` after making changes in index.ts to parse data that user send to bakcend through body [basically to validate input send by user].
 13. re migrated schema as removed option_id from options `npx prisma migrate dev --name emove_option_id` and regenerate client through `npx prisma generate`.
 14. tested task end point(post) with json on postman
@@ -55,3 +55,7 @@
 16. creting endpoints to worker and removed bal_id from worker schema and migrated `npx prisma migrate dev --name remove_balid_worker` then generated `npx prisma generate `.
 17. Again modified Task schema by altering it with done col, so migrate and generate.
 18. once again `npx prisma migrate dev --name added_unique_constraint` and regenerate.
+
+### Front End(FE)
+
+19. added cors package `npm i cors @types/cors` to enable communication between backend (BE) and FE as they both hosted on different ports
