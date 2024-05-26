@@ -71,7 +71,8 @@ router.get("/task", authMiddleware, async (req, res) => {
     });
 
     res.json({
-        result
+        result,
+        taskDetails
     })
 
 })
@@ -82,7 +83,9 @@ router.post("/task", authMiddleware, async (req, res) => {
     // @ts-ignore
     const userId = req.userId;
 
-    console.log(parseResult.data)
+    console.log("BBBBBBBBBBBBBBBBBBBBBBB",body)
+    
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@",parseResult.data)
 
     if (!parseResult.success) {
         return res.status(411).json({
@@ -132,7 +135,7 @@ router.get("/presignedUrl", authMiddleware, async(req,res) => {
         Expires: 3600
       })
       
-      console.log({ url, fields })
+    //   console.log({ url, fields })
 
     res.json({
         preSignedUrl: url,

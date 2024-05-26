@@ -70,7 +70,8 @@ router.get("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0,
         result[r.option_id].count++;
     });
     res.json({
-        result
+        result,
+        taskDetails
     });
 }));
 router.post("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -78,7 +79,8 @@ router.post("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0
     const parseResult = types_1.createTaskInput.safeParse(body);
     // @ts-ignore
     const userId = req.userId;
-    console.log(parseResult.data);
+    console.log("BBBBBBBBBBBBBBBBBBBBBBB", body);
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@", parseResult.data);
     if (!parseResult.success) {
         return res.status(411).json({
             message: "you've sent the wrong inputs"
@@ -120,7 +122,7 @@ router.get("/presignedUrl", middleware_1.authMiddleware, (req, res) => __awaiter
         },
         Expires: 3600
     });
-    console.log({ url, fields });
+    //   console.log({ url, fields })
     res.json({
         preSignedUrl: url,
         fields
