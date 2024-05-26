@@ -53,11 +53,14 @@ function UploadImage({ onImageAdded, image }: UploadImageProps) {
             <div className="w-40 h-40 rounded border border-blue-700 text-2xl">
                 <div className="h-full flex justify-center w-full">
                     <div className="h-full flex justify-center flex-col">
-                        {uploading ? <label className="text-sm">Loading...</label> : <>
-                        <label style={{color: "green"}} className="cursor-pointer">+
-                            <input className="opacity-0 absolute" type='file' onChange={onFileSelect} />
-                        </label> 
-                        </>}
+                        {
+                            uploading ? <label className="text-sm">Loading...</label> : 
+                            <>
+                                <label style={{color: "green"}} className="cursor-pointer">+
+                                    <input className="opacity-0 absolute" type='file' onChange={onFileSelect} />
+                                </label> 
+                            </>
+                        }
                     </div> 
                 </div> 
             </div> 
