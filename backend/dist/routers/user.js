@@ -79,8 +79,6 @@ router.post("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0
     const parseResult = types_1.createTaskInput.safeParse(body);
     // @ts-ignore
     const userId = req.userId;
-    console.log("BBBBBBBBBBBBBBBBBBBBBBB", body);
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@", parseResult.data);
     if (!parseResult.success) {
         return res.status(411).json({
             message: "you've sent the wrong inputs"

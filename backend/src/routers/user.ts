@@ -83,10 +83,6 @@ router.post("/task", authMiddleware, async (req, res) => {
     // @ts-ignore
     const userId = req.userId;
 
-    console.log("BBBBBBBBBBBBBBBBBBBBBBB",body)
-    
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@",parseResult.data)
-
     if (!parseResult.success) {
         return res.status(411).json({
             message: "you've sent the wrong inputs"

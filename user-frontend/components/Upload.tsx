@@ -14,7 +14,7 @@ function Upload() {
     async function onSubmit() {
         const response = await axios.post(`${BACKEND_URL}/v1/user/task`, {
             options: images.map(image => ({
-                imageUrl: image,
+                imgUrl: image,
             })),
             title,
             signature: "txSignature"

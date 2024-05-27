@@ -136,7 +136,7 @@ router.get("/nextTask", workerMiddleware, async (req, res) => {
             message:"no tasks left 4 u 2 review"
         })
     } else {
-        res.status(411).json({
+        res.json({
             task
         })
     }

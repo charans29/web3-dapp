@@ -59,3 +59,6 @@
 ### Front End(FE)
 
 19. added cors package `npm i cors @types/cors` to enable communication between backend (BE) and FE as they both hosted on different ports
+20. under user fe created appbar, hero, upload and uploadImage files and tested AWS s3 connection to fetch images through cloudfront url with status 200ok.
+21. created dynamic routes folder `cd app && mkdir -p task/\[taskId\]` to contain page.tsx `touch "task/[taskId]/page.tsx"`that returns specific options submitted userId == taskId
+22.

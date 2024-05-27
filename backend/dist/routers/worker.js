@@ -133,7 +133,7 @@ router.get("/nextTask", middleware_1.workerMiddleware, (req, res) => __awaiter(v
         });
     }
     else {
-        res.status(411).json({
+        res.json({
             task
         });
     }
