@@ -85,10 +85,9 @@ router.post("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0
         });
     }
     const response = yield prismaClient.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
-        var _a;
         const task = yield tx.task.create({
             data: {
-                title: (_a = parseResult.data.title) !== null && _a !== void 0 ? _a : DEFAULT_TITLE,
+                title: parseResult.data.title || DEFAULT_TITLE,
                 amount: 1,
                 sign: parseResult.data.signature,
                 user_id: userId

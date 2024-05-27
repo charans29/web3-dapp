@@ -35,7 +35,7 @@ function page({params: { taskId }}: {params: { taskId: string }}) {
 
     return <div>
         <Appbar />
-        <div className='text-xl pt-10 flex justify-center'>
+        <div className='text-xl pt-10 flex justify-center text-blue-700 font-thin'>
             {taskDetails.title}
         </div>
         <div className='flex justify-center pt-5'>

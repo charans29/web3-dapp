@@ -92,7 +92,7 @@ router.post("/task", authMiddleware, async (req, res) => {
     const response = await prismaClient.$transaction(async (tx) => {
         const task = await tx.task.create({
             data: {
-                title: parseResult.data.title ?? DEFAULT_TITLE,
+                title: parseResult.data.title || DEFAULT_TITLE ,
                 amount: 1,
                 sign: parseResult.data.signature,
                 user_id: userId
