@@ -19,51 +19,116 @@ const middleware_1 = require("../middleware");
 const config_1 = require("../config");
 const db_1 = require("../db");
 const types_1 = require("../types");
+const tweetnacl_1 = __importDefault(require("tweetnacl"));
+const web3_js_1 = require("@solana/web3.js");
+const bs58_1 = require("bs58");
+const SecretKey_1 = require("../SecretKey");
 const router = (0, express_1.Router)();
 const prismaClient = new client_1.PrismaClient();
 const TOTAL_SUBMISSIONS = 100;
+const connection = new web3_js_1.Connection("YOUR_RPC_API_KEY");
 router.post("/payout", middleware_1.workerMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
     const workerId = req.workerId;
-    const worker = yield prismaClient.worker.findFirst({
-        where: {
-            id: workerId
-        }
-    });
-    if (!worker) {
-        return res.json({
-            message: "worker not found"
-        });
-    }
-    const address = worker.address;
-    const txnId = "0x123434";
+    const SOL = req.body.SOL;
+    console.log("SOLSOSLSOSLSOLSOSLOSLSOSLSO: ", SOL);
     yield prismaClient.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
-        yield tx.worker.update({
+        const updatedWorker = yield tx.worker.update({
             where: {
                 id: workerId
             },
             data: {
                 pending_amt: {
-                    decrement: worker.pending_amt
+                    decrement: SOL
                 },
                 locked_amt: {
-                    increment: worker.pending_amt
+                    increment: SOL
                 }
             }
         });
+        if (!updatedWorker) {
+            throw new Error('Worker not found');
+        }
+        const transaction = new web3_js_1.Transaction().add(web3_js_1.SystemProgram.transfer({
+            fromPubkey: new web3_js_1.PublicKey("YOUR_PARENT_WALLET_ADDRESS"),
+            toPubkey: new web3_js_1.PublicKey(updatedWorker.address),
+            lamports: 1000000000 * SOL / TOTAL_SUBMISSIONS,
+        }));
+        const keypair = web3_js_1.Keypair.fromSecretKey((0, bs58_1.decode)(SecretKey_1.SK));
+        let signature = "";
+        try {
+            signature = yield (0, web3_js_1.sendAndConfirmTransaction)(connection, transaction, [keypair]);
+        }
+        catch (e) {
+            return res.json({
+                message: "SOL Transaction failed"
+            });
+        }
         yield tx.payout.create({
             data: {
                 worker_id: workerId,
-                amount: worker.pending_amt,
+                amount: updatedWorker.pending_amt,
                 status: "processing",
-                signature: txnId
-            }
+                signature,
+            },
         });
-    }));
-    res.json({
-        message: "processing",
-        amount: worker.pending_amt
+    })).catch((error) => {
+        console.error('Transaction failed:', error);
+        res.status(500).json({ message: "Transaction failed" });
+        return null;
     });
+    const wrkr = yield prismaClient.worker.findFirst({
+        where: {
+            id: workerId
+        }
+    });
+    res.json({
+        message: "Success",
+        amount: wrkr === null || wrkr === void 0 ? void 0 : wrkr.pending_amt
+    });
+    // const transaction = new Transaction().add(
+    //     SystemProgram.transfer({
+    //         fromPubkey: new PublicKey("3vKYs772uGosyd78k6G5AZExTEz1M9NkFqvkQHRNbHep"),
+    //         toPubkey: new PublicKey(worker.address),
+    //         lamports: 1000_000_000 * worker.pending_amt / TOTAL_SUBMISSIONS,
+    //     })
+    // );
+    // const keypair = Keypair.fromSecretKey(decode(SK));
+    // let signature = "";
+    // try {
+    //     signature = await sendAndConfirmTransaction(
+    //         connection,
+    //         transaction,
+    //         [keypair],
+    //     );
+    //  } catch(e) {
+    //     return res.json({
+    //         message: "Transaction failed"
+    //     })
+    //  }
+    // await prismaClient.$transaction(async tx => {
+    //     await tx.worker.update({
+    //         where: {
+    //             id: workerId
+    //         },
+    //         data: {
+    //             pending_amt: {
+    //                 decrement: worker.pending_amt
+    //             },
+    //             locked_amt: {
+    //                 increment: worker.pending_amt
+    //             }
+    //         }
+    //     });
+    //     await tx.payout.create({
+    //         data: {
+    //             worker_id: workerId,
+    //             amount: worker.pending_amt,
+    //             status: "processing",
+    //             signature: signature
+    //         }
+    //     });
+    // });
 }));
 router.get("/balance", middleware_1.workerMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
@@ -74,7 +139,7 @@ router.get("/balance", middleware_1.workerMiddleware, (req, res) => __awaiter(vo
         }
     });
     res.json({
-        pendinAmount: worker === null || worker === void 0 ? void 0 : worker.pending_amt,
+        pendingAmount: worker === null || worker === void 0 ? void 0 : worker.pending_amt,
         lockedAmount: worker === null || worker === void 0 ? void 0 : worker.locked_amt
     });
 }));
@@ -90,8 +155,8 @@ router.post("/submissions", middleware_1.workerMiddleware, (req, res) => __await
             });
         }
         const amount = (task.amount / TOTAL_SUBMISSIONS) * 1000;
-        const submission = yield prismaClient.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
-            const submission = yield tx.submission.create({
+        yield prismaClient.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+            yield tx.submission.create({
                 data: {
                     option_id: Number(paresedBody.data.selection),
                     worker_id: workerId,
@@ -109,7 +174,6 @@ router.post("/submissions", middleware_1.workerMiddleware, (req, res) => __await
                     }
                 }
             });
-            return submission;
         }));
         const nextTask = yield (0, db_1.getNextTask)(workerId);
         res.json({
@@ -139,11 +203,17 @@ router.get("/nextTask", middleware_1.workerMiddleware, (req, res) => __awaiter(v
     }
 }));
 router.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const getAddress = "Bom5Qu6ijkJiaVKG74qZpLx1aH8sdGxnCqftcZ913Wne";
-    // const getAddress = "GPDfrK6pBmtqastvh9tha5LS4yrktenTC3oet4ZVMBRK"
+    const { publicKey, sign } = req.body;
+    const message = new TextEncoder().encode("Sign to Auth for work on mechanical Tasks");
+    const result = tweetnacl_1.default.sign.detached.verify(message, new Uint8Array(sign.data), new web3_js_1.PublicKey(publicKey).toBytes());
+    if (!result) {
+        return res.status(411).json({
+            message: "Incorrect signature"
+        });
+    }
     const workerExist = yield prismaClient.worker.findFirst({
         where: {
-            address: getAddress
+            address: publicKey
         }
     });
     if (workerExist) {
@@ -151,13 +221,14 @@ router.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, function*
             workerId: workerExist.id
         }, config_1.JWT_WORKER_SECRET);
         res.json({
-            token
+            token,
+            amount: workerExist.pending_amt / TOTAL_SUBMISSIONS
         });
     }
     else {
         const worker = yield prismaClient.worker.create({
             data: {
-                address: getAddress,
+                address: publicKey,
                 pending_amt: 0,
                 locked_amt: 0
             }

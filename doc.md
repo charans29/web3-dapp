@@ -52,7 +52,7 @@
         signature: '0x123123123'
     }
 15. tested task(get) endpoint http://localhost:3000/v1/user/task?taskId=1
-16. creting endpoints to worker and removed bal_id from worker schema and migrated `npx prisma migrate dev --name remove_balid_worker` then generated `npx prisma generate `.
+16. creting endpoints to worker and removed bal_id from worker schema and migrated `npx prisma migrate dev --name remove_balid_worker` then generated `npx prisma generate ` undr be.
 17. Again modified Task schema by altering it with done col, so migrate and generate.
 18. once again `npx prisma migrate dev --name added_unique_constraint` and regenerate.
 
@@ -61,4 +61,17 @@
 19. added cors package `npm i cors @types/cors` to enable communication between backend (BE) and FE as they both hosted on different ports
 20. under user fe created appbar, hero, upload and uploadImage files and tested AWS s3 connection to fetch images through cloudfront url with status 200ok.
 21. created dynamic routes folder `cd app && mkdir -p task/\[taskId\]` to contain page.tsx `touch "task/[taskId]/page.tsx"`that returns specific options submitted userId == taskId
-22.
+22. developed worker fe and user fe to track task submissions and psots resepectively.
+
+
+### WEB3.0 STUFF
+
+23. Installing `npm install --save \
+    @solana/wallet-adapter-base \
+    @solana/wallet-adapter-react \
+    @solana/wallet-adapter-react-ui \
+    @solana/wallet-adapter-wallets \
+    @solana/web3.js`
+    under user fe and then `npm i tweetnacl` & `npm i @solana/web3.js` in user be to make connections, and get tx signtr & blockhashes.
+
+24. did as same as above in worker fe and bes as well

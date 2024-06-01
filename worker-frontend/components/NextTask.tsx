@@ -1,7 +1,9 @@
 "use client"
+import { useAuth } from '@/contexts/AuthContext';
 import { BACKEND_URL } from '@/utils';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
+
 
 interface Task{
     "id":number,
@@ -11,16 +13,20 @@ interface Task{
         "task_id":number
     }[],
     "title":string,
-    "amount":number
+    "amount":number,
 }
 
 function NextTask() {
     const [currentTask, setTask] = useState<Task | null>(null);
     const [loading, setLoading] = useState(true); 
-    const [submitting, setSubmission] = useState(false); 
+    const [submitting, setSubmission] = useState(false);
+    const { isSignedIn, balance, setBalance } = useAuth();
 
     useEffect(() => {
-        setLoading(true);
+        if (!isSignedIn) {
+            setLoading(true);
+            return;  
+        } 
         axios.get(`${BACKEND_URL}/v1/worker/nextTask`, {
             headers: {
                 "Authorization": localStorage.getItem("token")
@@ -33,18 +39,23 @@ function NextTask() {
                 setLoading(false)
                 setTask(null)
             })
-    },[])
+    },[isSignedIn])
 
     if (loading) {
-        return <div>
-            Loading...
-        </div>
+        return <div className="h-screen flex justify-center flex-col">
+                    <div className="flex justify-center">
+                        <div className="flex justify-center flex-col text-violet-300 font-thin">
+                            <div className="ml-28">Loading ... </div>
+                            <div>Need Autograph..... connect ur wallet pls !!</div>
+                        </div>
+                    </div>
+                </div>
     }
 
     if (!currentTask) {
         return <div className="h-screen flex justify-center flex-col">
             <div className="flex justify-center text-violet-300 font-thin">
-            NO tasks available at this moment. plssss Check back in some time ...!!
+                 NO tasks available at this moment. plssss Check back in some time ...!!
             </div>
         </div>
     }
@@ -67,6 +78,7 @@ function NextTask() {
                 });
 
                 const nextTask = res.data.nextTask;
+                setBalance(balance + res.data.amount/100)
                 if (nextTask) {
                     setTask(nextTask);
                 } else {

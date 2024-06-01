@@ -6,6 +6,8 @@ import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
 import { JWT_SECRET } from "../config";
 import { authMiddleware } from "../middleware";
 import { createTaskInput } from "../types";
+import nacl from "tweetnacl";
+import { Connection, PublicKey } from "@solana/web3.js";
 
 const router = Router();
 const prismaClient = new PrismaClient();
@@ -18,6 +20,7 @@ const s3Client = new S3Client({
 })
 
 const DEFAULT_TITLE = "Select the most clickable thumbnail";
+const connection = new Connection("YOUR_RPC_API_KEY")
 
 router.get("/task", authMiddleware, async (req, res) => {
     //@ts-ignore
@@ -89,6 +92,34 @@ router.post("/task", authMiddleware, async (req, res) => {
         });
     }
 
+    const user = await prismaClient.user.findFirst({
+        where: {
+            id: userId
+        }
+    })
+
+    const transaction = await connection.getTransaction(parseResult.data.signature, {
+        maxSupportedTransactionVersion: 1
+    });
+
+    if ((transaction?.meta?.postBalances[1] ?? 0) - (transaction?.meta?.preBalances[1] ?? 0) !== 100000000) {
+        return res.status(411).json({
+            message: "Transaction signature/amount incorrect"
+        })
+    }
+
+    if (transaction?.transaction.message.getAccountKeys().get(1)?.toString() !== "3vKYs772uGosyd78k6G5AZExTEz1M9NkFqvkQHRNbHep") {
+        return res.status(411).json({
+            message: "Transaction sent to wrong address"
+        })
+    }
+
+    if (transaction?.transaction.message.getAccountKeys().get(0)?.toString() !== user?.address) {
+        return res.status(411).json({
+            message: "Transaction sent to wrong address"
+        })
+    }
+
     const response = await prismaClient.$transaction(async (tx) => {
         const task = await tx.task.create({
             data: {
@@ -131,7 +162,7 @@ router.get("/presignedUrl", authMiddleware, async(req,res) => {
         Expires: 3600
       })
       
-    //   console.log({ url, fields })
+      console.log({ url, fields })
 
     res.json({
         preSignedUrl: url,
@@ -140,10 +171,23 @@ router.get("/presignedUrl", authMiddleware, async(req,res) => {
 })
 
 router.post("/signin", async(req, res) => {
-    const getAddress = "GPDfrK6pBmtqastvh9tha5LS4yrktenTC3oet4ZVMBRK"
+    const {publicKey, sign} = req.body;
+    const message = new TextEncoder().encode("Sign to Auth mechanical Tasks");
+    const result = nacl.sign.detached.verify(
+        message,
+        new Uint8Array(sign.data),
+        new PublicKey(publicKey).toBytes()
+    )
+
+    if (!result) {
+        return res.status(411).json({
+            message: "Incorrect signature"
+        })
+    }
+
     const userExist = await prismaClient.user.findFirst({
         where: {
-            address: getAddress
+            address: publicKey
         }
     })
 
@@ -157,7 +201,7 @@ router.post("/signin", async(req, res) => {
     } else {
         const user = await prismaClient.user.create({
             data: {
-                address: getAddress
+                address: publicKey
             }
         })
         const token = jwt.sign({

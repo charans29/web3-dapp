@@ -1,4 +1,5 @@
 "use client"
+import { useAuth } from '@/contexts/AuthContext';
 import { BACKEND_URL } from '@/utils';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletDisconnectButton, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
@@ -6,24 +7,25 @@ import axios from 'axios';
 import { useEffect } from 'react';
 
 function Appbar() {
-  const { publicKey, signMessage }= useWallet();
-
+  const { publicKey, signMessage } = useWallet();
+  const { isSignedIn, setSignedIn } = useAuth();
+  
   async function signToAuth() {
-    if (!publicKey) {
-            return;
-        }      
+    if (!publicKey || isSignedIn) return;
+
     const message = new TextEncoder().encode("Sign to Auth mechanical Tasks");
     const sign = await signMessage?.(message);
     const res = await axios.post(`${BACKEND_URL}/v1/user/signin`, {
       sign,
       publicKey: publicKey?.toString()
     })
-    localStorage.setItem("token", res.data.token)
+    localStorage.setItem("token", res.data.token);
+    setSignedIn(true);
   }
 
   useEffect(() => {
     signToAuth()
-  }, [publicKey]);
+  }, [publicKey, isSignedIn]);
 
   return (
     <div className="border-blue-700 border-b flex justify-between items-center h-14 px-5 bg-slate-900">
