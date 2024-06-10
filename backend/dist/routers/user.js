@@ -26,13 +26,13 @@ const router = (0, express_1.Router)();
 const prismaClient = new client_1.PrismaClient();
 const s3Client = new client_s3_1.S3Client({
     credentials: {
-        accessKeyId: "AKIA3FLDYLQPPLJECTVC",
-        secretAccessKey: "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"
+        accessKeyId: "PRESIGNED_USER_ID",
+        secretAccessKey: "PRESIGNED_USER_KEY"
     },
     region: "us-east-2"
 });
 const DEFAULT_TITLE = "Select the most clickable thumbnail";
-const connection = new web3_js_1.Connection("https://solana-devnet.g.alchemy.com/v2/gUUVFEHELGvNCdd3yinJfxI6m9ioZomO");
+const connection = new web3_js_1.Connection("YOUR_RPC_API_KEY");
 router.get("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
     const taskId = req.query.taskId;
@@ -101,7 +101,7 @@ router.post("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0
             message: "Transaction signature/amount incorrect"
         });
     }
-    if (((_e = transaction === null || transaction === void 0 ? void 0 : transaction.transaction.message.getAccountKeys().get(1)) === null || _e === void 0 ? void 0 : _e.toString()) !== "3vKYs772uGosyd78k6G5AZExTEz1M9NkFqvkQHRNbHep") {
+    if (((_e = transaction === null || transaction === void 0 ? void 0 : transaction.transaction.message.getAccountKeys().get(1)) === null || _e === void 0 ? void 0 : _e.toString()) !== "PARENT_ADDRESS") {
         return res.status(411).json({
             message: "Transaction sent to wrong address"
         });
