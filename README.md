@@ -33,45 +33,55 @@ cd user-frontend && npm install
 
 # Install worker frontend dependencies
 cd worker-frontend && npm install
+```
 
 # Usage Instructions
 
 ## Backend
 
 To start the backend server, navigate to the `backend` directory:
+```bash
 cd backend
 tsc -b
 node dist/index.js
+```
 
-User Frontend
+## User Frontend
+
 To submit tasks, first navigate to the user-frontend directory and start the frontend application:
+```bash
 cd user-frontend
 npm run dev
+```
 
-Steps for Users:
+## Steps for Users:
 Connect your Phantom Wallet using the "Connect Wallet" button on the UI.
 Fill in the task description in the provided input field.
 Upload the required images using the file upload interface.
 Submit the task along with the SOL payment by following the UI prompts.
 
-Worker Frontend
+## Worker Frontend
 Workers can access and complete tasks by navigating to the worker-frontend directory and starting the frontend application:
+```bash
 cd worker-frontend
 npm run dev
+```
 
-Steps for Workers:
+## Steps for Workers:
 Connect your Phantom Wallet using the "Connect Wallet" button on the UI.
 View the list of available tasks and accept one that you wish to work on.
 Complete the task according to the provided instructions.
 Request payouts for your completed tasks through the UI interface.
 
-Configuration
+## Configuration
+
 Backend
 Provide the RPC API endpoint and parent wallet addresses in the user.ts and worker.ts files within the backend/src directory.
+
 For user.ts:
-// backend/src/user.ts
 const PARENT_WALLET_ADDRESS = 'YourParentWalletPublicKeyHere';
+
 For worker.ts:
-// backend/src/worker.ts
 const PARENT_WALLET_ADDRESS = 'YourParentWalletPublicKeyHere';
+
 Remember to replace 'YourParentWalletPublicKeyHere' with the actual public key of the parent wallet that will be used to receive and send SOL.
