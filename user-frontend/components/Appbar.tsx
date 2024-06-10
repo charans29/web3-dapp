@@ -15,6 +15,7 @@ function Appbar() {
 
     const message = new TextEncoder().encode("Sign to Auth mechanical Tasks");
     const sign = await signMessage?.(message);
+
     const res = await axios.post(`${BACKEND_URL}/v1/user/signin`, {
       sign,
       publicKey: publicKey?.toString()

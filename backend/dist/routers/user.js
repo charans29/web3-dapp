@@ -26,13 +26,13 @@ const router = (0, express_1.Router)();
 const prismaClient = new client_1.PrismaClient();
 const s3Client = new client_s3_1.S3Client({
     credentials: {
-        accessKeyId: "PRESIGNED_USER_ID",
-        secretAccessKey: "PRESIGNED_USER_KEY"
+        accessKeyId: "AKIA3FLDYLQPPLJECTVC",
+        secretAccessKey: "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"
     },
     region: "us-east-2"
 });
 const DEFAULT_TITLE = "Select the most clickable thumbnail";
-const connection = new web3_js_1.Connection("YOUR_RPC_API_KEY");
+const connection = new web3_js_1.Connection("https://solana-devnet.g.alchemy.com/v2/gUUVFEHELGvNCdd3yinJfxI6m9ioZomO");
 router.get("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
     const taskId = req.query.taskId;

@@ -19,7 +19,6 @@ router.post("/payout", workerMiddleware, async (req, res) => {
     //@ts-ignore
     const workerId = req.workerId;
     const SOL = req.body.SOL;
-    console.log("SOLSOSLSOSLSOLSOSLOSLSOSLSO: ", SOL);
 
     await prismaClient.$transaction(async (tx) => {
         const updatedWorker = await tx.worker.update({
@@ -137,7 +136,6 @@ router.post("/payout", workerMiddleware, async (req, res) => {
     //         }
     //     });
     // });
-
     
 });
 

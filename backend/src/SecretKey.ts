@@ -1,1 +1,1 @@
-export const SK = "SECRET_KEY"
+export const SK = "YOUR_SECRET_KEY"

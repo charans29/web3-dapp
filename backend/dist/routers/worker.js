@@ -26,7 +26,7 @@ const SecretKey_1 = require("../SecretKey");
 const router = (0, express_1.Router)();
 const prismaClient = new client_1.PrismaClient();
 const TOTAL_SUBMISSIONS = 100;
-const connection = new web3_js_1.Connection("YOUR_RPC_API_KEY");
+const connection = new web3_js_1.Connection("https://solana-devnet.g.alchemy.com/v2/gUUVFEHELGvNCdd3yinJfxI6m9ioZomO");
 router.post("/payout", middleware_1.workerMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
     const workerId = req.workerId;
@@ -50,7 +50,7 @@ router.post("/payout", middleware_1.workerMiddleware, (req, res) => __awaiter(vo
             throw new Error('Worker not found');
         }
         const transaction = new web3_js_1.Transaction().add(web3_js_1.SystemProgram.transfer({
-            fromPubkey: new web3_js_1.PublicKey("YOUR_PARENT_WALLET_ADDRESS"),
+            fromPubkey: new web3_js_1.PublicKey("3vKYs772uGosyd78k6G5AZExTEz1M9NkFqvkQHRNbHep"),
             toPubkey: new web3_js_1.PublicKey(updatedWorker.address),
             lamports: 1000000000 * SOL / TOTAL_SUBMISSIONS,
         }));

@@ -108,7 +108,7 @@ router.post("/task", authMiddleware, async (req, res) => {
         })
     }
 
-    if (transaction?.transaction.message.getAccountKeys().get(1)?.toString() !== "3vKYs772uGosyd78k6G5AZExTEz1M9NkFqvkQHRNbHep") {
+    if (transaction?.transaction.message.getAccountKeys().get(1)?.toString() !== "PARENT_ADDRESS") {
         return res.status(411).json({
             message: "Transaction sent to wrong address"
         })
