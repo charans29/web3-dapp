@@ -74,4 +74,5 @@
     @solana/web3.js`
     under user fe and then `npm i tweetnacl` & `npm i @solana/web3.js` in user be to make connections, and get tx signtr & blockhashes.
 
-24. did as same as above in worker fe and bes as well
+24. did as same as above in worker fe and be as well
+25. wrapped entire code base with wallet provider as a context with layout.ts in root level
